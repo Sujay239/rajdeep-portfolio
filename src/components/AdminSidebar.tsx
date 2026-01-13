@@ -10,7 +10,6 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-  Menu,
   Sun,
   Moon,
   // Shield,
