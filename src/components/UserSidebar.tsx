@@ -433,7 +433,7 @@ const TooltipWrapper: React.FC<TooltipWrapperProps> = ({
               top: `${tooltipPos.top}px`,
               left: `${tooltipPos.left}px`,
             }}
-            className="fixed z-9999 px-3 py-1.5 text-xs font-bold text-green-400 bg-slate-900 border border-slate-700 rounded-md shadow-xl -translate-y-1/2 pointer-events-none animate-in fade-in duration-200 whitespace-nowrap"
+            className="fixed z-[9999] px-3 py-1.5 text-xs font-bold text-green-400 bg-slate-900 border border-slate-700 rounded-md shadow-xl -translate-y-1/2 pointer-events-none animate-in fade-in duration-200 whitespace-nowrap"
           >
             {label}
             {/* Small Arrow pointing left */}
