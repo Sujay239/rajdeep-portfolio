@@ -1,60 +1,161 @@
-import cron from "node-cron";
-import pool from "./db/db";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  type ReactNode,
+} from "react";
+import { useNotification } from "@/components/NotificationProvider";
 
-export const initScheduler = () => {
-  // Run daily at 00:00 (Midnight)
-  cron.schedule("0 0 * * *", async () => {
-    console.log("Running Daily Auto-Absent Job...");
+// Define the shape of the context
+export interface AttendanceContextType {
+  status: "clocked_in" | "clocked_out" | "not_clocked_in";
+  isCheckedIn: boolean; // Convenience boolean for UI toggles
+  hasCheckedOut: boolean; // Convenience boolean for disabling UI
+  startTime: number | null; // Timestamp for the timer
+  checkIn: () => Promise<void>;
+  checkOut: () => Promise<void>;
+  isLoading: boolean;
+}
+
+const AttendanceContext = createContext<AttendanceContextType | undefined>(
+  undefined
+);
+
+const API_BASE_URL = import.meta.env.VITE_BASE_URL;
+
+export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
+  const [status, setStatus] = useState<
+    "clocked_in" | "clocked_out" | "not_clocked_in"
+  >("not_clocked_in");
+  const [startTime, setStartTime] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const { showSuccess, showError } = useNotification();
+
+  // Load initial status from backend
+  const fetchStatus = useCallback(async () => {
     try {
-      const today = new Date();
-      // 1. Check for Sunday (0)
-      if (today.getDay() === 0) {
-        console.log("Skipping Daily Auto-Absent Job: Today is Sunday.");
-        return;
+      const response = await fetch(`${API_BASE_URL}/employee/dashboard/stats`, {
+        credentials: "include",
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const backendStatus = data.stats.attendanceStatus; // 'clocked_in' | 'clocked_out' | 'not_clocked_in'
+
+        setStatus(backendStatus);
+
+        if (backendStatus === "clocked_in" && data.stats.checkInTime) {
+          // If the backend sends a time string "HH:MM:SS", we need to convert it to a today's timestamp for the timer
+          // Assumes checkInTime is "HH:MM:SS"
+          const [h, m, s] = data.stats.checkInTime.split(":").map(Number);
+        //   const now = new Date();
+          const checkInDate = new Date();
+          checkInDate.setHours(h, m, s, 0);
+
+          setStartTime(checkInDate.getTime());
+        } else {
+          setStartTime(null);
+        }
       }
-
-      // 2. Check for Holiday
-      const holidayCheckQuery = `SELECT 1 FROM holidays WHERE date = CURRENT_DATE LIMIT 1`;
-      const holidayResult = await pool.query(holidayCheckQuery);
-
-      if ((holidayResult.rowCount ?? 0) > 0) {
-        console.log("Skipping Daily Auto-Absent Job: Today is a Holiday.");
-        return;
-      }
-
-      // Logic: Insert 'Absent' for all active users who don't have a record for today.
-      // ON CONFLICT (user_id, date) DO NOTHING ensures we don't overwrite existing leaves/attendance.
-      const query = `
-        INSERT INTO attendance (user_id, date, status, remarks)
-        SELECT id, CURRENT_DATE, 'Absent', 'System Auto-marked'
-        FROM users
-        WHERE status = 'Active'
-        ON CONFLICT (user_id, date) DO NOTHING;
-      `;
-
-      const result = await pool.query(query);
-      console.log(
-        `Daily Auto-Absent Job Completed. Inserted ${result.rowCount} rows.`
-      );
-    } catch (err) {
-      console.error("Error running daily auto-absent job:", err);
+    } catch (error) {
+      console.error("Failed to fetch attendance status", error);
+    } finally {
+      setIsLoading(false);
     }
-  });
+  }, []);
 
-  // Run hourly at minute 0
-  cron.schedule("0 * * * *", async () => {
-    console.log("Running Hourly Audit Log Cleanup...");
+  useEffect(() => {
+    fetchStatus();
+  }, [fetchStatus]);
+
+  const checkIn = async () => {
+    if (status !== "not_clocked_in") return; // Should likely be disabled anyway
+
     try {
-      // Delete logs older than 24 hours
-      const query = `DELETE FROM audit_logs WHERE created_at < NOW() - INTERVAL '24 hours'`;
-      const result = await pool.query(query);
-      console.log(
-        `Hourly Audit Log Cleanup Completed. Deleted ${result.rowCount} rows.`
+      const response = await fetch(
+        `${API_BASE_URL}/employee/dashboard/clock-in`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        }
       );
-    } catch (err) {
-      console.error("Error running audit log cleanup:", err);
-    }
-  });
 
-  console.log("Daily Auto-Absent Scheduler initialized.");
+      if (response.ok) {
+        // Optimistic update
+        const now = Date.now();
+        setStatus("clocked_in");
+        setStartTime(now);
+        showSuccess("Clocked In Successfully!");
+        // Optionally refetch to be sure
+      } else {
+        const errorData = await response.json();
+        showError(errorData.message || "Clock In Failed");
+      }
+    } catch (error) {
+      console.error("Clock in error:", error);
+      showError("Failed to clock in");
+    }
+  };
+
+  const checkOut = async () => {
+    if (status !== "clocked_in") return;
+
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/employee/dashboard/clock-out`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+        }
+      );
+
+      if (response.ok) {
+        setStatus("clocked_out");
+        setStartTime(null);
+        showSuccess("Clocked Out Successfully!");
+      } else {
+        const errorData = await response.json();
+        showError(errorData.message || "Clock Out Failed");
+      }
+    } catch (error) {
+      console.error("Clock out error:", error);
+      showError("Failed to clock out");
+    }
+  };
+
+  const isCheckedIn = status === "clocked_in";
+  const hasCheckedOut = status === "clocked_out";
+
+  return (
+    <AttendanceContext.Provider
+      value={{
+        status,
+        isCheckedIn,
+        hasCheckedOut,
+        startTime,
+        checkIn,
+        checkOut,
+        isLoading,
+      }}
+    >
+      {children}
+    </AttendanceContext.Provider>
+  );
+};
+
+export const useAttendance = () => {
+  const context = useContext(AttendanceContext);
+  if (context === undefined) {
+    throw new Error("useAttendance must be used within an AttendanceProvider");
+  }
+  return context;
 };
