@@ -279,9 +279,9 @@ const UserSidebar: React.FC<UserSidebarProps> = ({
                   }
               `}
               >
-                <LogOut size={20} />
+                <LogOut size={20} stroke="red" />
                 <span
-                  className={` whitespace-nowrap ml-3 transition-all duration-300 font-bold ${isExpandedVisual
+                  className={` whitespace-nowrap ml-3 transition-all duration-300 font-bold text-[#ff0000] ${isExpandedVisual
                     ? "w-auto opacity-100"
                     : "w-0 opacity-0 hidden"
                     }`}
