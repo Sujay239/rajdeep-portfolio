@@ -132,25 +132,35 @@ const AdminAttendance: React.FC = () => {
   // Calculate stats (Fix: use full data for stats, or filtered? Usually stats show overall, but list shows filtered. Let's keep stats on FULL data for context, or filter?
   // User generally wants to see "How many present?" globally, then filter list to see WHO.
   // Let's keep stats based on attendanceData (full).
-  const presentCount = attendanceData.filter(
-    (r) => r.status === "Present"
+  // Calculate stats based on FULL data
+  const presentCount = attendanceData.filter((r) =>
+    ["Present", "Late", "Half Day"].includes(r.status)
   ).length;
+
   const absentCount = attendanceData.filter(
     (r) => r.status === "Absent"
   ).length;
-  const onLeaveCount = attendanceData.filter(
-    (r) =>
-      r.status === "Half Day" || r.status === "On Leave" || r.status === "Leave"
+
+  const onLeaveCount = attendanceData.filter((r) =>
+    ["On Leave", "Leave"].includes(r.status)
   ).length;
 
   const calculatedLate = attendanceData.filter((r) => {
     if (r.status === "Late") return true;
-    if (r.status === "Present" && r.checkIn !== "-") {
+    if (["Present", "Half Day"].includes(r.status) && r.checkIn !== "-") {
       const [time, period] = r.checkIn.split(" ");
       const [h, m] = time.split(":").map(Number);
+
+      // Late logic: After 9:15 AM
       if (period === "AM" && h === 9 && m > 15) return true;
       if (period === "AM" && h > 9 && h !== 12) return true;
+      if (period === "PM" && h !== 12) return true; // Late if PM (unless 12 PM which is noon)
+      // Note: 12 PM is noon. 12 AM is midnight.
+      // If checkIn is 12:30 PM, that's late.
+      // If checkIn is 12:00 PM, that's late.
+      // So period === "PM" is generally late for a morning shift.
       if (period === "PM") return true;
+
       return false;
     }
     return false;
@@ -174,8 +184,8 @@ const AdminAttendance: React.FC = () => {
               <Label
                 htmlFor="view-mode"
                 className={`text-sm cursor-pointer transition-all ${viewMode === "daily"
-                    ? "font-bold text-slate-900 dark:text-white underline decoration-2 underline-offset-4"
-                    : "text-slate-500 dark:text-slate-500"
+                  ? "font-bold text-slate-900 dark:text-white underline decoration-2 underline-offset-4"
+                  : "text-slate-500 dark:text-slate-500"
                   }`}
               >
                 Daily
@@ -190,8 +200,8 @@ const AdminAttendance: React.FC = () => {
               <Label
                 htmlFor="view-mode"
                 className={`text-sm cursor-pointer transition-all ${viewMode === "history"
-                    ? "font-bold text-slate-900 dark:text-white underline decoration-2 underline-offset-4"
-                    : "text-slate-500 dark:text-slate-500"
+                  ? "font-bold text-slate-900 dark:text-white underline decoration-2 underline-offset-4"
+                  : "text-slate-500 dark:text-slate-500"
                   }`}
               >
                 History
