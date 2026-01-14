@@ -22,7 +22,7 @@ const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const { showError, showSuccess } = useNotification();
+  const { showError } = useNotification();
 
   const [values, setValues] = useState<FormValues>({
     email: "",
