@@ -256,16 +256,16 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({
               <button
                 onClick={handleLogout}
                 className={`
-                flex items-center rounded-xl transition-all duration-200 w-full group cursor-pointer
+                flex items-center rounded-xl transition-all duration-200 w-full group cursor-pointer bg-red-500
                 ${isExpandedVisual
                     ? "bg-white/5 hover:bg-red-500/20 text-slate-300 hover:text-red-400 px-4 py-3 border border-white/5"
                     : "bg-transparent hover:bg-white/5 text-slate-400 hover:text-red-400 p-3 justify-center"
                   }
               `}
               >
-                <LogOut size={20} />
+                <LogOut size={20} stroke='red' />
                 <span
-                  className={` whitespace-nowrap ml-3 transition-all duration-300 font-bold ${isExpandedVisual
+                  className={` whitespace-nowrap ml-3 transition-all duration-300 font-bold text-red-400  ${isExpandedVisual
                     ? "w-auto opacity-100"
                     : "w-0 opacity-0 hidden"
                     }`}
