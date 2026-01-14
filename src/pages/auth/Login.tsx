@@ -31,8 +31,6 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    document.title = "Auto Computauion - Login";
-
     // Check if user is already logged in
     const checkAuth = async () => {
       try {

@@ -6,6 +6,7 @@ import { UserProvider } from "./components/UserProvider";
 import { ThemeProvider } from "./hooks/use-theme";
 import Approutes from "./routes";
 import ScrollToTop from "./components/ScrollToTop";
+import DynamicTitle from "./components/DynamicTitle";
 
 const App: React.FC = () => {
   return (
@@ -14,6 +15,7 @@ const App: React.FC = () => {
         <NotificationProvider>
           <UserProvider>
             <BrowserRouter>
+              <DynamicTitle />
               <ScrollToTop />
               <Approutes />
             </BrowserRouter>
