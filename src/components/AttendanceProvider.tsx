@@ -48,12 +48,13 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({
         setStatus(backendStatus);
 
         if (backendStatus === "clocked_in" && data.stats.checkInTime) {
-          // If the backend sends a time string "HH:MM:SS", we need to convert it to a today's timestamp for the timer
-          // Assumes checkInTime is "HH:MM:SS"
+          // If the backend sends a time string "HH:MM:SS" in UTC
           const [h, m, s] = data.stats.checkInTime.split(":").map(Number);
-        //   const now = new Date();
+
           const checkInDate = new Date();
-          checkInDate.setHours(h, m, s, 0);
+
+          // --- FIXED: Use setUTCHours so the browser knows the DB time is UTC ---
+          checkInDate.setUTCHours(h, m, s, 0);
 
           setStartTime(checkInDate.getTime());
         } else {
@@ -72,7 +73,7 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({
   }, [fetchStatus]);
 
   const checkIn = async () => {
-    if (status !== "not_clocked_in") return; // Should likely be disabled anyway
+    if (status !== "not_clocked_in") return;
 
     try {
       const response = await fetch(
@@ -92,7 +93,6 @@ export const AttendanceProvider: React.FC<{ children: ReactNode }> = ({
         setStatus("clocked_in");
         setStartTime(now);
         showSuccess("Clocked In Successfully!");
-        // Optionally refetch to be sure
       } else {
         const errorData = await response.json();
         showError(errorData.message || "Clock In Failed");

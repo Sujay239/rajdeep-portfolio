@@ -22,7 +22,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
-// import { useNotification } from "@/components/NotificationProvider";
 const API_BASE_URL = import.meta.env.VITE_BASE_URL;
 import { useAttendance } from "../../components/AttendanceProvider";
 import ClockOutConfirmationDialog from "../../components/ClockOutConfirmationDialog";
@@ -68,7 +67,7 @@ const UserHome: React.FC = () => {
   const { isCheckedIn, hasCheckedOut, startTime, checkIn, checkOut } =
     useAttendance();
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
-  const [isClockingIn, setIsClockingIn] = useState(false); // Local loading state for button feedback
+  const [isClockingIn, setIsClockingIn] = useState(false);
   const [showClockOutModal, setShowClockOutModal] = useState(false);
 
   // --- Dashboard Data State ---
@@ -76,7 +75,6 @@ const UserHome: React.FC = () => {
   const [schedule, setSchedule] = useState<ScheduleItem[]>([]);
   const [recentActivity, setRecentActivity] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState(true);
-  // const { showSuccess, showError } = useNotification();
 
   // --- Fetch Dashboard Data ---
   useEffect(() => {
@@ -190,7 +188,6 @@ const UserHome: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 px-6 lg:p-10 animate-in fade-in duration-500">
       <div className="space-y-8">
-        {/* Header Section */}
         {/* Header Section (Sticky) */}
         <div className="lg:sticky top-0 z-20 bg-slate-50/95 dark:bg-slate-950/95 backdrop-blur support-[backdrop-filter]:bg-slate-50/50 py-4 -mx-6 px-6 lg:-mx-10 lg:px-10 border-b border-slate-200/50 dark:border-slate-800/50 mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
@@ -234,7 +231,6 @@ const UserHome: React.FC = () => {
                   key={idx}
                   className="relative overflow-hidden hover:shadow-md transition-shadow group border-slate-100 dark:border-slate-700/60"
                 >
-                  {/* Background Watermark Icon */}
                   <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity transform rotate-12 pointer-events-none">
                     {React.cloneElement(stat.icon as React.ReactElement<any>, {
                       size: 80,
@@ -278,7 +274,6 @@ const UserHome: React.FC = () => {
                 </Button>
               </CardHeader>
 
-              {/* Empty State */}
               {schedule.length === 0 && !loading && (
                 <div className="p-8 text-center text-slate-500 dark:text-slate-400">
                   <Calendar className="h-10 w-10 mx-auto mb-2 opacity-50" />
@@ -286,7 +281,7 @@ const UserHome: React.FC = () => {
                 </div>
               )}
 
-              {/* Mobile View: Card List using Shadcn Cards */}
+              {/* Mobile View */}
               <div className="md:hidden space-y-4 p-4">
                 {schedule.map((item, i) => {
                   const isMeetingEnded = new Date(item.end_time) < new Date();
@@ -334,7 +329,7 @@ const UserHome: React.FC = () => {
                 })}
               </div>
 
-              {/* Desktop View: Table */}
+              {/* Desktop View */}
               <div className="hidden md:block">
                 {schedule.length > 0 && (
                   <Table>
@@ -412,7 +407,6 @@ const UserHome: React.FC = () => {
           <div className="space-y-8 order-first lg:order-none">
             {/* Timer Card */}
             <Card className="rounded-3xl shadow-xl relative overflow-hidden bg-white dark:bg-transparent dark:bg-linear-to-br dark:from-slate-900 dark:to-slate-800 border-none">
-              {/* Decorative background elements (Dark mode only) */}
               <div className="absolute top-0 right-0 w-32 h-32 bg-slate-900/5 dark:bg-white/5 rounded-full -mr-16 -mt-16 blur-2xl"></div>
               <div className="absolute bottom-0 left-0 w-24 h-24 bg-slate-900/5 dark:bg-white/5 rounded-full -ml-12 -mb-12 blur-2xl"></div>
 
@@ -468,6 +462,7 @@ const UserHome: React.FC = () => {
                   </span>
                 </Button>
 
+                {/* --- FIXED: Clean Display with Asia/Kolkata Timezone --- */}
                 {startTime && isCheckedIn && (
                   <div className="mt-6 pt-6 border-t border-slate-100 dark:border-white/10 w-full flex justify-between text-xs text-slate-500 dark:text-slate-400">
                     <span>Started at</span>
@@ -475,6 +470,7 @@ const UserHome: React.FC = () => {
                       {new Date(startTime).toLocaleTimeString("en-US", {
                         hour: "2-digit",
                         minute: "2-digit",
+                        hour12: true,
                         timeZone: "Asia/Kolkata",
                       })}
                     </span>
@@ -550,7 +546,6 @@ const UserHome: React.FC = () => {
         isOpen={showClockOutModal}
         onClose={() => setShowClockOutModal(false)}
         onConfirm={async () => {
-          //  const loading = isClockingIn;
           await checkOut();
           setShowClockOutModal(false);
         }}
