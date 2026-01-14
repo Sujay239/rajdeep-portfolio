@@ -192,7 +192,7 @@ Year: ${currentYear}`;
     window.open(gmailUrl, "_blank", "noopener,noreferrer");
   };
   return (
-    <div className="relative min-h-screen bg-white dark:bg-slate-950 flex items-center justify-center p-4 lg:p-0 overflow-hidden">
+    <div className="relative min-h-screen bg-white dark:bg-slate-950 lg:flex lg:items-center lg:justify-center overflow-hidden">
 
       {/* Mobile Background Image (Visible only on small screens) */}
       <div className="absolute inset-0 z-0 lg:hidden">
@@ -204,7 +204,7 @@ Year: ${currentYear}`;
         <div className="absolute inset-0 bg-gradient-to-t from-white via-white/80 to-transparent dark:from-slate-950 dark:via-slate-950/80" />
       </div>
 
-      <div className="w-full h-full lg:h-screen grid grid-cols-1 lg:grid-cols-2 z-10 relative shadow-2xl lg:shadow-none bg-white/50 dark:bg-slate-900/50 backdrop-blur-md lg:bg-transparent rounded-3xl lg:rounded-none overflow-hidden">
+      <div className="w-full min-h-screen lg:h-screen grid grid-cols-1 lg:grid-cols-2 z-10 relative lg:shadow-none lg:bg-transparent lg:rounded-none overflow-hidden">
 
         {/* Left Side - Image (Desktop) */}
         <div className="hidden lg:relative lg:flex lg:flex-col lg:items-start lg:justify-end lg:p-20 overflow-hidden bg-slate-900">
