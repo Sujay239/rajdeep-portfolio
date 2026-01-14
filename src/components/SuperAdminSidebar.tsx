@@ -302,10 +302,10 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({
               className={`flex flex-col overflow-hidden transition-all duration-300 ${isExpandedVisual ? "w-32 ml-1" : "w-0 opacity-0 hidden"
                 }`}
             >
-              <span className="text-sm font-semibold text-white truncate">
+              <span className="text-sm font-semibold text-white truncate dark:text-black">
                 {userData ? userData.name : "Super Admin"}
               </span>
-              <span className="text-xs text-slate-400 truncate">
+              <span className="text-xs text-slate-400 truncate dark:text-black">
                 {userData?.designation || "System Owner"}
               </span>
             </div>
