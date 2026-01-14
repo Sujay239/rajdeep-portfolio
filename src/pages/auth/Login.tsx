@@ -228,7 +228,7 @@ Year: ${currentYear}`;
 
         {/* Right Side - Login Form */}
         <div className="flex flex-col justify-center items-center p-8 sm:p-12 lg:p-24 bg-white dark:bg-slate-950 lg:bg-white lg:dark:bg-slate-950 h-full">
-          <div className="w-full flex flex-col justify-center max-w-md space-y-8 animate-in fade-in zoom-in-95 duration-500 lg:mt-36">
+          <div className="w-full flex flex-col justify-center max-w-md space-y-8 animate-in fade-in zoom-in-95 duration-500 lg:mt-36 max-sm:mt-[25%]">
 
             <div className="space-y-2 text-center lg:text-left">
               <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Welcome back</h2>
