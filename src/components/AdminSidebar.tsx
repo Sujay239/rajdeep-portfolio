@@ -285,12 +285,14 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
 // --- Theme Toggle Button ---
 const ThemeToggleBtn = () => {
   const { theme, toggleTheme } = useTheme();
+  const isDark = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+
   return (
     <button
       onClick={toggleTheme}
       className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
     >
-      {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+      {isDark ? <Sun size={16} /> : <Moon size={16} />}
     </button>
   );
 };

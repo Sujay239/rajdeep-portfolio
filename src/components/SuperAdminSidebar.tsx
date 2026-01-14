@@ -1,4 +1,4 @@
-import  { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
@@ -87,9 +87,9 @@ const navItems: NavItem[] = [
     icon: <Clock size={20} />,
   },
   {
-    label : "Allowed Ips",
-    to : "/super-admin/allowed-ips",
-    icon : <Shield size={20} />,
+    label: "Allowed Ips",
+    to: "/super-admin/allowed-ips",
+    icon: <Shield size={20} />,
   },
   {
     label: "Audit Logs",
@@ -175,9 +175,9 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({
       <aside
         className={`
           fixed lg:static inset-y-0 left-0 z-[100]
-          bg-slate-900 dark:bg-black  border-r border-slate-800 dark:border-slate-800
+          bg-white dark:bg-black  border-r border-slate-800 dark:border-slate-800
           transition-all duration-300 ease-in-out
-          flex flex-col text-white
+          flex flex-col text-black dark:text-white
           ${mobileOpen
             ? "translate-x-0 w-64 shadow-2xl"
             : "-translate-x-full lg:translate-x-0"
@@ -189,16 +189,16 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({
         <div className="h-20 flex items-center justify-between px-4 border-b border-white/10 dark:border-white/10">
           <div
             className={`flex items-center gap-3 overflow-hidden transition-all duration-300 ${expanded
-                ? "w-full"
-                : "absolute left-0 w-full justify-center lg:justify-center"
+              ? "w-full"
+              : "absolute left-0 w-full justify-center lg:justify-center"
               }`}
           >
             <img
               src={expanded ? logo : mobileLogo}
               alt="Logo"
               className={`transition-all duration-300 ${expanded
-                  ? "h-8 "
-                  : "h-8 lg:h-10 lg:w-10 object-contain brightness-0 invert"
+                ? "h-8 "
+                : "h-8 lg:h-10 lg:w-10 object-contain brightness-0 invert"
                 }`}
             />
           </div>
@@ -224,7 +224,7 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({
                     flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group relative overflow-hidden
                     ${isActive
                     ? "bg-blue-600 text-white shadow-md shadow-blue-900/20"
-                    : "text-slate-400 hover:bg-white/5 hover:text-white"
+                    : "text-slate-400 hover:bg-white/5 hover:text-black dark:hover:text-white"
                   }
                     ${!isExpandedVisual ? "justify-center" : ""}
                   `}
@@ -266,8 +266,8 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({
                 <LogOut size={20} />
                 <span
                   className={` whitespace-nowrap ml-3 transition-all duration-300 font-bold ${isExpandedVisual
-                      ? "w-auto opacity-100"
-                      : "w-0 opacity-0 hidden"
+                    ? "w-auto opacity-100"
+                    : "w-0 opacity-0 hidden"
                     }`}
                 >
                   Logout
@@ -324,12 +324,14 @@ const SuperAdminSidebar: React.FC<SuperAdminSidebarProps> = ({
 // --- Theme Toggle Button ---
 const ThemeToggleBtn = () => {
   const { theme, toggleTheme } = useTheme();
+  const isDark = theme === "dark" || (theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+
   return (
     <button
       onClick={toggleTheme}
       className="p-2 rounded-lg bg-white/10 text-slate-400 hover:bg-white/20 transition-colors"
     >
-      {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+      {isDark ? <Sun size={16} /> : <Moon size={16} />}
     </button>
   );
 };

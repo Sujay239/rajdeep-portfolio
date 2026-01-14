@@ -56,8 +56,12 @@ export function ThemeProvider({
   }
 
   const toggleTheme = () => {
-    const newTheme = theme === "dark" ? "light" : "dark"
-    updateTheme(newTheme)
+    if (theme === "system") {
+      const systemIsDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      updateTheme(systemIsDark ? "light" : "dark");
+    } else {
+      updateTheme(theme === "dark" ? "light" : "dark");
+    }
   }
 
   const value = {
