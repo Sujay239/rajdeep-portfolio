@@ -20,12 +20,25 @@ const SessionGuard: React.FC = () => {
 
                 // Check for session expiry
                 if (response.status === 401 || response.status === 403) {
-
-                    // Ignore login and 2fa endpoints to prevent loops
                     const url = args[0]?.toString() || '';
-                    if (!url.includes('/auth/login') && !url.includes('/auth/authorized-2fa')) {
+                    const currentPath = window.location.pathname;
+
+                    // List of paths that should NEVER trigger a redirect to login
+                    const publicPaths = ['/login', '/forgot-password', '/reset-password', '/verify-2fa', '/unauthorized'];
+                    if (publicPaths.includes(currentPath)) {
+                        return response;
+                    }
+
+                    // Ignore specific endpoints to prevent loops or unwanted redirects
+                    if (
+                        !url.includes('/auth/login') &&
+                        !url.includes('/auth/authorized-2fa') &&
+                        !url.includes('/employee/dashboard/clock-in') &&
+                        !url.includes('/auth/myData') &&
+                        !url.includes('/auth/forgot-password') &&
+                        !url.includes('/auth/reset-password')
+                    ) {
                         // Only show error for admin/super-admin paths, silent redirect for users
-                        const currentPath = window.location.pathname;
                         if (currentPath.startsWith('/admin') || currentPath.startsWith('/super-admin')) {
                             showError("Session expired. Please log in again.");
                         }
